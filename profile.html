@@ -201,9 +201,11 @@
       : null;
 
     const accentColor = user.accent_color ? '#' + user.accent_color.toString(16).padStart(6, '0') : '#5865F2';
+    const colors = JSON.parse(localStorage.getItem('booga_colors') || '{}');
+    const savedColor = colors[user.id];
 
     document.getElementById('profileCard').innerHTML = `
-      <div class="banner" style="${bannerURL ? `background:url('${bannerURL}') center/cover no-repeat` : `background:${accentColor}`}">
+      <div class="banner" style="${bannerURL ? `background:url('${bannerURL}') center/cover no-repeat` : `background:${savedColor || accentColor}`}">
         ${bannerURL ? `<img src="${bannerURL}" alt="banner">` : ''}
       </div>
       <div class="profile-body">
@@ -218,8 +220,22 @@
           <div class="section-value rep-positive">+1</div>
         </div>
         <div class="profile-section">
-          <div class="section-label">ID de Discord</div>
-          <div class="section-value" style="font-size:0.85rem;color:#64748b;">${user.id}</div>
+          <div class="section-label">Descripción</div>
+          <div id="descDisplay" style="font-size:0.9rem;color:#cbd5e1;min-height:20px;">${getDesc(user.id)}</div>
+          <button onclick="editDesc('${user.id}')" style="margin-top:8px;background:rgba(255,255,255,0.07);border:none;color:#94a3b8;font-size:0.75rem;font-family:Inter,sans-serif;padding:4px 10px;border-radius:6px;cursor:pointer;">✏️ Editar</button>
+        </div>
+        <div class="profile-section" style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="section-label">Reputación</div>
+            <div class="section-value rep-positive" id="repDisplay">+${getRep(user.id)}</div>
+          </div>
+          <button onclick="giveRep('${user.id}','${user.username}')" style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:0.8rem;font-family:Inter,sans-serif;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:600;">👍 +Rep</button>
+        </div>
+        <div class="profile-section">
+          <div class="section-label">Personalizar perfil</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+            <button onclick="changeBannerColor('${user.id}')" style="background:rgba(255,255,255,0.07);border:none;color:#94a3b8;font-size:0.75rem;font-family:Inter,sans-serif;padding:6px 12px;border-radius:6px;cursor:pointer;">🎨 Color de banner</button>
+          </div>
         </div>
       </div>`;
 
@@ -243,6 +259,56 @@
           Iniciar sesión con Discord
         </button>
       </div>`;
+  }
+
+  // --- Reputation system ---
+  function getRep(userId) {
+    const reps = JSON.parse(localStorage.getItem('booga_reps') || '{}');
+    return reps[userId] || 0;
+  }
+  function giveRep(userId, username) {
+    const myUser = JSON.parse(sessionStorage.getItem('discordUser') || 'null');
+    if (!myUser) { alert('Debes iniciar sesión para dar reputación.'); return; }
+    if (myUser.id === userId) { alert('No puedes darte reputación a ti mismo.'); return; }
+    const givenKey = 'booga_rep_given_' + myUser.id;
+    const given = JSON.parse(localStorage.getItem(givenKey) || '[]');
+    if (given.includes(userId)) { alert('Ya le diste reputación a este usuario.'); return; }
+    const reps = JSON.parse(localStorage.getItem('booga_reps') || '{}');
+    reps[userId] = (reps[userId] || 0) + 1;
+    localStorage.setItem('booga_reps', JSON.stringify(reps));
+    given.push(userId);
+    localStorage.setItem(givenKey, JSON.stringify(given));
+    document.getElementById('repDisplay').textContent = '+' + reps[userId];
+    alert('✅ Le diste +1 reputación a @' + username);
+  }
+
+  // --- Description system ---
+  function getDesc(userId) {
+    const descs = JSON.parse(localStorage.getItem('booga_descs') || '{}');
+    return descs[userId] || 'Sin descripción';
+  }
+  function editDesc(userId) {
+    const myUser = JSON.parse(sessionStorage.getItem('discordUser') || 'null');
+    if (!myUser || myUser.id !== userId) { alert('Solo puedes editar tu propia descripción.'); return; }
+    const current = getDesc(userId);
+    const newDesc = prompt('Escribe tu descripción:', current);
+    if (newDesc === null) return;
+    const descs = JSON.parse(localStorage.getItem('booga_descs') || '{}');
+    descs[userId] = newDesc.slice(0, 200);
+    localStorage.setItem('booga_descs', JSON.stringify(descs));
+    document.getElementById('descDisplay').textContent = descs[userId];
+  }
+
+  // --- Banner color customization ---
+  function changeBannerColor(userId) {
+    const myUser = JSON.parse(sessionStorage.getItem('discordUser') || 'null');
+    if (!myUser || myUser.id !== userId) { alert('Solo puedes personalizar tu propio perfil.'); return; }
+    const color = prompt('Ingresa un color en hexadecimal (ej: #ff5733):', '#5865F2');
+    if (!color) return;
+    const colors = JSON.parse(localStorage.getItem('booga_colors') || '{}');
+    colors[userId] = color;
+    localStorage.setItem('booga_colors', JSON.stringify(colors));
+    document.querySelector('.banner').style.background = color;
   }
 
   // Check saved session first
