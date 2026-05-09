@@ -216,10 +216,6 @@
         <div class="profile-name">${user.global_name || user.username}</div>
         <div class="profile-tag">@${user.username}</div>
         <div class="profile-section">
-          <div class="section-label">Reputación</div>
-          <div class="section-value rep-positive">+1</div>
-        </div>
-        <div class="profile-section">
           <div class="section-label">Descripción</div>
           <div id="descDisplay" style="font-size:0.9rem;color:#cbd5e1;min-height:20px;">${getDesc(user.id)}</div>
           <button onclick="editDesc('${user.id}')" style="margin-top:8px;background:rgba(255,255,255,0.07);border:none;color:#94a3b8;font-size:0.75rem;font-family:Inter,sans-serif;padding:4px 10px;border-radius:6px;cursor:pointer;">✏️ Editar</button>
@@ -232,9 +228,15 @@
           <button onclick="giveRep('${user.id}','${user.username}')" style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:0.8rem;font-family:Inter,sans-serif;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:600;">👍 +Rep</button>
         </div>
         <div class="profile-section">
-          <div class="section-label">Personalizar perfil</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-            <button onclick="changeBannerColor('${user.id}')" style="background:rgba(255,255,255,0.07);border:none;color:#94a3b8;font-size:0.75rem;font-family:Inter,sans-serif;padding:6px 12px;border-radius:6px;cursor:pointer;">🎨 Color de banner</button>
+          <div class="section-label">Color de banner</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+            ${['#5865F2','#eb459e','#57F287','#FEE75C','#ED4245','#ff7b25','#a855f7','#0ea5e9','#111827','#1e293b'].map(c =>
+              `<div onclick="setBannerColor('${user.id}','${c}')" style="width:28px;height:28px;border-radius:6px;background:${c};cursor:pointer;border:2px solid rgba(255,255,255,0.1);transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>`
+            ).join('')}
+            <label style="width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.07);cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.1);" title="Color personalizado">
+              <input type="color" onchange="setBannerColor('${user.id}',this.value)" style="opacity:0;width:0;height:0;position:absolute;">
+              <span style="font-size:14px;">🎨</span>
+            </label>
           </div>
         </div>
       </div>`;
@@ -300,7 +302,7 @@
   }
 
   // --- Banner color customization ---
-  function changeBannerColor(userId) {
+  function setBannerColor(userId) {
     const myUser = JSON.parse(sessionStorage.getItem('discordUser') || 'null');
     if (!myUser || myUser.id !== userId) { alert('Solo puedes personalizar tu propio perfil.'); return; }
     const color = prompt('Ingresa un color en hexadecimal (ej: #ff5733):', '#5865F2');
