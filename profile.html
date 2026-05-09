@@ -229,17 +229,34 @@
         </div>
         <div class="profile-section">
           <div class="section-label">Color de banner</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-            ${['#5865F2','#eb459e','#57F287','#FEE75C','#ED4245','#ff7b25','#a855f7','#0ea5e9','#111827','#1e293b'].map(c =>
-              `<div onclick="setBannerColor('${user.id}','${c}')" style="width:28px;height:28px;border-radius:6px;background:${c};cursor:pointer;border:2px solid rgba(255,255,255,0.1);transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>`
-            ).join('')}
-            <label style="width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.07);cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.1);" title="Color personalizado">
-              <input type="color" onchange="setBannerColor('${user.id}',this.value)" style="opacity:0;width:0;height:0;position:absolute;">
-              <span style="font-size:14px;">🎨</span>
-            </label>
-          </div>
+          <div id="colorPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
         </div>
       </div>`;
+
+    // Build color picker
+    const colors_preset = ['#5865F2','#eb459e','#57F287','#FEE75C','#ED4245','#ff7b25','#a855f7','#0ea5e9','#111827','#1e293b'];
+    const picker = document.getElementById('colorPicker');
+    if (picker) {
+      colors_preset.forEach(c => {
+        const d = document.createElement('div');
+        d.style.cssText = `width:28px;height:28px;border-radius:6px;background:${c};cursor:pointer;border:2px solid rgba(255,255,255,0.1);transition:transform 0.15s;`;
+        d.onmouseover = () => d.style.transform = 'scale(1.2)';
+        d.onmouseout = () => d.style.transform = 'scale(1)';
+        d.onclick = () => setBannerColor(user.id, c);
+        picker.appendChild(d);
+      });
+      // Custom color input
+      const label = document.createElement('label');
+      label.style.cssText = 'width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,0.07);cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.1);';
+      label.title = 'Color personalizado';
+      label.innerHTML = '<span style="font-size:14px;">🎨</span>';
+      const inp = document.createElement('input');
+      inp.type = 'color';
+      inp.style.cssText = 'opacity:0;width:0;height:0;position:absolute;';
+      inp.onchange = () => setBannerColor(user.id, inp.value);
+      label.appendChild(inp);
+      picker.appendChild(label);
+    }
 
     // Update nav
     document.getElementById('userAvatar').src = avatarURL;
@@ -302,11 +319,9 @@
   }
 
   // --- Banner color customization ---
-  function setBannerColor(userId) {
+  function setBannerColor(userId, color) {
     const myUser = JSON.parse(sessionStorage.getItem('discordUser') || 'null');
     if (!myUser || myUser.id !== userId) { alert('Solo puedes personalizar tu propio perfil.'); return; }
-    const color = prompt('Ingresa un color en hexadecimal (ej: #ff5733):', '#5865F2');
-    if (!color) return;
     const colors = JSON.parse(localStorage.getItem('booga_colors') || '{}');
     colors[userId] = color;
     localStorage.setItem('booga_colors', JSON.stringify(colors));
