@@ -221,13 +221,7 @@
           <div id="descDisplay" style="font-size:0.9rem;color:#cbd5e1;min-height:20px;">${getDesc(user.id)}</div>
           <button onclick="editDesc('${user.id}')" style="margin-top:8px;background:rgba(255,255,255,0.07);border:none;color:#94a3b8;font-size:0.75rem;font-family:Inter,sans-serif;padding:4px 10px;border-radius:6px;cursor:pointer;">✏️ Editar</button>
         </div>
-        <div class="profile-section" style="display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div class="section-label">Reputación</div>
-            <div class="section-value rep-positive" id="repDisplay">+${getRep(user.id)}</div>
-          </div>
-          <button onclick="giveRep('${user.id}','${user.username}')" style="background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:#4ade80;font-size:0.8rem;font-family:Inter,sans-serif;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:600;">👍 +Rep</button>
-        </div>
+
       </div>`;
 
     // Build color picker
