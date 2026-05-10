@@ -120,6 +120,31 @@
       <img id="userAvatar" src="" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(99,102,241,0.6);">
       <span id="userName" class="user-name"></span>
     </div>
+    <div class="hamburger-wrap" style="position:relative;">
+      <button class="bell-btn" id="hamburgerBtn" onclick="toggleMenu()" style="display:flex;flex-direction:column;gap:4px;padding:6px;background:none;border:none;cursor:pointer;">
+        <span style="display:block;width:18px;height:2px;background:#94a3b8;border-radius:2px;"></span>
+        <span style="display:block;width:18px;height:2px;background:#94a3b8;border-radius:2px;"></span>
+        <span style="display:block;width:18px;height:2px;background:#94a3b8;border-radius:2px;"></span>
+      </button>
+      <div id="hamburgerMenu" style="display:none;position:absolute;right:0;top:calc(100% + 8px);background:rgba(18,22,36,0.97);border:1px solid rgba(255,255,255,0.1);border-radius:10px;min-width:160px;overflow:hidden;backdrop-filter:blur(12px);z-index:200;">
+        <a href="profile.html" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Profile</a>
+        <a href="info.html" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Info</a>
+        <a href="#" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Scripts</a>
+        <a href="#" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Settings</a>
+      </div>
+    </div>
+    <script>
+      function toggleMenu() {
+        const m = document.getElementById('hamburgerMenu');
+        m.style.display = m.style.display === 'none' ? 'block' : 'none';
+      }
+      document.addEventListener('click', function(e) {
+        const btn = document.getElementById('hamburgerBtn');
+        if (btn && !btn.contains(e.target)) {
+          document.getElementById('hamburgerMenu').style.display = 'none';
+        }
+      });
+    </script>
   </div>
 </nav>
 
