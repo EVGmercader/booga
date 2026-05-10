@@ -698,7 +698,8 @@ const items = [
 const stabilityClass = { Overpaid:"overpaid", Rising:"rising", Fluctuating:"fluctuating", Stable:"stable", Dropping:"dropping", Underpaid:"underpaid", Unstable:"unstable" };
 const rarityClass = { legendary:"name-legendary", epic:"name-epic", rare:"name-rare", gold:"name-gold", red:"name-red", purple:"name-purple", blue:"name-blue" };
 const stabilityColor = { Overpaid:"#f59e0b", Rising:"#22c55e", Fluctuating:"#3b82f6", Stable:"#22c55e", Dropping:"#ef4444", Underpaid:"#ef4444", Unstable:"#f97316" };
-let shown = Infinity;
+let shown = 20;
+let currentList = items;
 
 const lazyObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -711,12 +712,20 @@ const lazyObserver = new IntersectionObserver((entries) => {
       lazyObserver.unobserve(img);
     }
   });
-}, { rootMargin: '200px' });
+}, { rootMargin: '300px' });
 
 function renderItems(list) {
+  currentList = list;
+  shown = 20;
   const grid = document.getElementById("itemGrid");
   grid.innerHTML = "";
-  list.slice(0, shown).forEach(item => {
+  appendItems(list, 0, shown);
+}
+
+function appendItems(list, from, to) {
+  const grid = document.getElementById("itemGrid");
+  const frag = document.createDocumentFragment();
+  list.slice(from, to).forEach(item => {
     const card = document.createElement("div");
     card.className = "card";
     const imgSrc = itemImages[item.key] || '';
@@ -730,13 +739,28 @@ function renderItems(list) {
         <div class="stat-row"><span>Stability:</span><span class="badge ${stabilityClass[item.stability]}"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${stabilityColor[item.stability]};margin-right:5px;vertical-align:middle;"></span>${item.stability}</span></div>
       </div>
     `;
-    grid.appendChild(card);
+    frag.appendChild(card);
     const img = card.querySelector('img[data-src]');
     if (img) lazyObserver.observe(img);
   });
+  grid.appendChild(frag);
 }
 
-function loadMore() { shown += 5; renderItems(items); }
+// Infinite scroll sentinel
+const sentinel = document.createElement('div');
+sentinel.id = 'sentinel';
+sentinel.style.height = '10px';
+document.getElementById("itemGrid").after(sentinel);
+
+const scrollObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && shown < currentList.length) {
+    const next = Math.min(shown + 20, currentList.length);
+    appendItems(currentList, shown, next);
+    shown = next;
+  }
+}, { rootMargin: '200px' });
+scrollObserver.observe(sentinel);
+
 document.querySelector(".search-input").addEventListener("input", function() {
   renderItems(items.filter(i => i.name.toLowerCase().includes(this.value.toLowerCase())));
 });
