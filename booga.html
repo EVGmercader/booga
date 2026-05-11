@@ -199,7 +199,7 @@
         <a href="profile.html" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Profile</a>
         <a href="info.html" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Info</a>
         <a href="#" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Scripts</a>
-        <a href="#" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Settings</a>
+        <a href="settings.html" style="display:block;padding:0.65rem 1.1rem;color:#cbd5e1;font-size:0.875rem;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='transparent'">Settings</a>
       </div>
     </div>
 
@@ -311,7 +311,14 @@
 
       // On page load
       (function() {
-        // Check saved session
+        // Apply saved background
+  (function() {
+    const saved = localStorage.getItem('booga_bg');
+    if (saved && saved !== 'original') {
+      const bgImg = document.querySelector('.video-bg img');
+      if (bgImg) bgImg.src = saved;
+    }
+  })();
         const saved = sessionStorage.getItem('discordUser');
         if (saved) { applyUserUI(JSON.parse(saved)); }
 
