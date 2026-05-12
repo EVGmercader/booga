@@ -325,7 +325,7 @@
       (function() {
         // Apply saved background
   (function() {
-    const saved = localStorage.getItem('booga_bg');
+    const saved = localStorage.getItem('booga_bg_url') || localStorage.getItem('booga_bg');
     if (saved && saved !== 'original') {
       const bgImg = document.querySelector('.video-bg img');
       if (bgImg) bgImg.src = saved;
